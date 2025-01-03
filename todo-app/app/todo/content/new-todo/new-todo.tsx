@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 
 interface NewTodoProps {
   setNewTodo: (todo: { title: string; description: string }) => void;
@@ -15,26 +17,28 @@ const NewTodo = ({ setNewTodo }: NewTodoProps): JSX.Element => {
       title,
       description,
     });
+    setTitle("");
+    setDescription("");
   };
 
   return (
     <>
-      <div>
-        <input
-          placeholder="Enter new todo item"
-          type="text"
+      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        <Input
+          label="Title"
+          placeholder="Enter new todo"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onValueChange={setTitle}
         />
-        <input
+        <Input
+          label="Description"
           placeholder="Enter description"
-          type="text"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onValueChange={setDescription}
         />
-      </div>
-      <div>
-        <button onClick={handleAddNewTodoItem}>Add</button>
+        <Button color="primary" onPress={handleAddNewTodoItem}>
+          Add
+        </Button>
       </div>
     </>
   );

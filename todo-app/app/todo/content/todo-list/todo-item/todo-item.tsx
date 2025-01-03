@@ -1,20 +1,47 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/modal";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 
-interface TodoItemProps {
+interface TodoItem {
+  id: number;
   title: string;
   description: string;
-  handleEdit: () => void;
-  handleDelete: () => void;
+  completed: boolean;
+}
+
+interface TodoItemProps {
+  item: TodoItem;
+  handleEdit: (item: TodoItem) => void;
+  handleDelete: (item: TodoItem) => void;
 }
 
 const TodoItem = ({
-  title,
-  description,
+  item,
   handleEdit,
   handleDelete,
 }: TodoItemProps): JSX.Element => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [title, setTitle] = useState(item.title);
+  const [description, setDescription] = useState(item.description);
+
+  const onModalOk = () => {
+    handleEdit({
+      ...item,
+      title: title,
+      description: description,
+    });
+  };
+
   return (
     <div>
       <div>
@@ -22,8 +49,52 @@ const TodoItem = ({
         <p>{description}</p>
       </div>
       <div>
-        <button onClick={handleEdit}>Edit</button>
-        <button onClick={handleDelete}>Delete</button>
+        <Button color="primary" onPress={onOpen}>
+          Edit
+        </Button>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  Edit Todo Item
+                </ModalHeader>
+                <ModalBody>
+                  <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                    <Input
+                      label="Title"
+                      placeholder="Enter the updated title"
+                      value={title}
+                      onValueChange={setTitle}
+                    />
+                    <Input
+                      label="Description"
+                      placeholder="Enter the updated description"
+                      value={description}
+                      onValueChange={setDescription}
+                    />
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    color="primary"
+                    onPress={() => {
+                      onModalOk();
+                      onClose();
+                    }}
+                  >
+                    Update
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+
+        <Button onPress={() => handleDelete(item)}>Delete</Button>
       </div>
     </div>
   );

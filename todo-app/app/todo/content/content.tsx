@@ -18,8 +18,6 @@ const ContentComponent = (): JSX.Element => {
   const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
 
   const spacerSize = 8;
-  const pendingTodoItems = 1;
-  const completedTodoItems = 2;
   const todoFilter = "All";
 
   const setNewTodoItem = ({
@@ -29,25 +27,38 @@ const ContentComponent = (): JSX.Element => {
     title: string;
     description: string;
   }) => {
-    console.log("New todo item added");
-    console.log("Title:", title);
-    console.log("Description:", description);
     setTodoItems([
       ...todoItems,
       { id: todoItems.length + 1, title, description, completed: false },
     ]);
   };
 
+  const onEditTodoItem = (item: TodoItem) => {
+    setTodoItems(
+      todoItems.map((todoItem: TodoItem) =>
+        todoItem.id === item.id ? todoItem : item,
+      ),
+    );
+  };
+
+  const onDeleteTodoItem = (item: TodoItem) => {
+    setTodoItems(todoItems.filter((i) => item.id !== i.id));
+  };
+
   return (
     <>
       <NewTodoItem setNewTodo={setNewTodoItem} />
       <Spacer y={spacerSize} />
-      <TodoList todoItems={todoItems} />
+      <TodoList
+        todoItems={todoItems}
+        onDeleteItem={onDeleteTodoItem}
+        onEditItem={onEditTodoItem}
+      />
       <Spacer y={spacerSize} />
       <TodoFooter
-        pending={pendingTodoItems}
-        completed={completedTodoItems}
+        completed={todoItems.filter((i) => i.completed).length}
         filter={todoFilter}
+        pending={todoItems.filter((i) => !i.completed).length}
       />
     </>
   );
