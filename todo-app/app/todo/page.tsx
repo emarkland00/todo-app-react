@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Spacer } from "@nextui-org/spacer";
-import { apiUrl } from "@/config/api";
 
 import ContentComponent from "./content/content";
 import TitleComponent from "./title/title";
 import { TodoItem } from "./content/lib/todo-item.interface";
+
+import { apiUrl } from "@/config/api";
 
 export default function TodoPage() {
   const spacerSize = 8;
@@ -17,7 +18,7 @@ export default function TodoPage() {
     fetch(`${apiUrl}/api/todo_items`)
       .then((response) => response.json())
       .then((json) => {
-        setTodos(json.data);
+        setTodos(() => json.data);
       });
   }, []);
 
@@ -27,7 +28,7 @@ export default function TodoPage() {
     <>
       <TitleComponent />
       <Spacer y={spacerSize} />
-      <ContentComponent inputTodoItems={todos} />
+      <ContentComponent inputTodoItems={todos} setInputTodoItems={setTodos} />
     </>
   );
 }
