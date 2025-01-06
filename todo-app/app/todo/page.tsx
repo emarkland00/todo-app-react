@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Spacer } from "@nextui-org/spacer";
+import { apiUrl } from "@/config/api";
 
 import ContentComponent from "./content/content";
 import TitleComponent from "./title/title";
@@ -13,7 +14,7 @@ export default function TodoPage() {
   let [todos, setTodos] = useState<TodoItem[]>([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:4000/api/todo_items")
+    fetch(`${apiUrl}/api/todo_items`)
       .then((response) => response.json())
       .then((json) => {
         setTodos(json.data);
