@@ -6,16 +6,14 @@ import { Spacer } from "@nextui-org/spacer";
 import NewTodoItem from "./new-todo/new-todo";
 import TodoList from "./todo-list/todo-list";
 import TodoFooter from "./todo-footer/todo-footer";
+import { TodoItem } from "./lib/todo-item.interface";
 
-interface TodoItem {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-}
-
-const ContentComponent = (): JSX.Element => {
-  const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
+const ContentComponent = ({
+  inputTodoItems,
+}: {
+  inputTodoItems: TodoItem[];
+}): JSX.Element => {
+  const [todoItems, setTodoItems] = useState<TodoItem[]>(inputTodoItems || []);
 
   const spacerSize = 8;
   const todoFilter = "All";

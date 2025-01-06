@@ -12,17 +12,12 @@ import {
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 
-interface TodoItem {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-}
+import * as TodoItemInterface from "../../lib/todo-item.interface";
 
 interface TodoItemProps {
-  item: TodoItem;
-  handleEdit: (item: TodoItem) => void;
-  handleDelete: (item: TodoItem) => void;
+  item: TodoItemInterface.TodoItem;
+  handleEdit: (item: TodoItemInterface.TodoItem) => void;
+  handleDelete: (item: TodoItemInterface.TodoItem) => void;
 }
 
 const TodoItem = ({
