@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState, useEffect } from "react";
 import { Spacer } from "@nextui-org/spacer";
 
 import NewTodoItem from "./new-todo/new-todo";
@@ -10,33 +10,50 @@ import { TodoItem } from "./lib/todo-item.interface";
 
 import { apiUrl } from "@/config/api";
 
-const makeApiReq = ({
+const todosApiPath: string = `${apiUrl}/api/todo_items`;
+
+function makeApiReq<T>({
   method,
-  path = `${apiUrl}/api/todo_items`,
-  body,
+  path,
+  body = undefined,
 }: {
   method: string;
-  path?: string;
-  body: any;
-}) => {
-  return fetch(path, {
+  path: string;
+  body?: T;
+}) {
+  let options = {
     method,
     headers: {
       "Content-Type": "application/json",
     },
+  };
+
+  if (method == "GET") {
+    return fetch(path, options);
+  }
+
+  return fetch(path, {
+    ...options,
     body: JSON.stringify(body),
   });
-};
+}
 
-const ContentComponent = ({
-  inputTodoItems,
-  setInputTodoItems,
-}: {
-  inputTodoItems: TodoItem[];
-  setInputTodoItems: Dispatch<SetStateAction<TodoItem[]>>;
-}): JSX.Element => {
+const ContentComponent = (): JSX.Element => {
   const [numCompleted, setNumCompleted] = useState(0);
   const [numPending, setNumPending] = useState(0);
+  const [todos, setTodos] = useState<TodoItem[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const res = await makeApiReq({
+        method: "GET",
+        path: todosApiPath,
+      });
+      const { data: todoItems }: { data: TodoItem[] } = await res.json();
+
+      setTodos(() => todoItems);
+    })();
+  }, []);
 
   const spacerSize = 8;
   const todoFilter = "All";
@@ -50,6 +67,7 @@ const ContentComponent = ({
   }) => {
     makeApiReq({
       method: "POST",
+      path: todosApiPath,
       body: {
         todo_item: {
           title,
@@ -60,8 +78,8 @@ const ContentComponent = ({
     })
       .then((response) => response.json())
       .then((json) => {
-        setInputTodoItems([
-          ...inputTodoItems,
+        setTodos([
+          ...todos,
           {
             ...json,
             key: json.id,
@@ -76,13 +94,13 @@ const ContentComponent = ({
 
     makeApiReq({
       method: "PATCH",
-      path: `${apiUrl}/api/todo_items/${id}`,
+      path: `${todosApiPath}/${id}`,
       body: {
         todo_item: itemBody,
       },
-    }).then((response) => {
-      setInputTodoItems(
-        inputTodoItems.map((todoItem: TodoItem) => {
+    }).then(() => {
+      setTodos(
+        todos.map((todoItem: TodoItem) => {
           if (todoItem.id !== id) {
             todoItem.title = itemBody.title;
             todoItem.description = itemBody.description;
@@ -99,28 +117,30 @@ const ContentComponent = ({
   const onDeleteTodoItem = (item: TodoItem) => {
     makeApiReq({
       method: "DELETE",
-      path: `${apiUrl}/api/todo_items/${item.id}`,
+      path: `${todosApiPath}/${item.id}`,
       body: {},
-    }).then((response) => {
-      setInputTodoItems(inputTodoItems.filter((i) => item.id !== i.id));
+    }).then(() => {
+      setTodos(todos.filter((i) => item.id !== i.id));
       updateFilterValues();
     });
   };
 
   const getNumItemsWithStatus = (status: string) =>
-    inputTodoItems.filter((i) => i.status === status).length;
+    todos.filter((i) => i.status === status).length;
 
   const updateFilterValues = () => {
     setNumCompleted(getNumItemsWithStatus("completed"));
     setNumPending(getNumItemsWithStatus("pending"));
   };
 
+  if (!todos.length) return <p>Loading data</p>;
+
   return (
     <>
       <NewTodoItem setNewTodo={setNewTodoItem} />
       <Spacer y={spacerSize} />
       <TodoList
-        todoItems={inputTodoItems}
+        todoItems={todos}
         onDeleteItem={onDeleteTodoItem}
         onEditItem={onEditTodoItem}
       />
