@@ -125,12 +125,9 @@ const ContentComponent = (): JSX.Element => {
     });
   };
 
-  const getNumItemsWithStatus = (status: string) =>
-    todos.filter((i) => i.status === status).length;
-
   const updateFilterValues = () => {
-    setNumCompleted(getNumItemsWithStatus("completed"));
-    setNumPending(getNumItemsWithStatus("pending"));
+    setNumCompleted(todos.filter((i) => i.status === "completed").length);
+    setNumPending(todos.filter((i) => i.status === "pending").length);
   };
 
   if (!todos.length) return <p>Loading data</p>;

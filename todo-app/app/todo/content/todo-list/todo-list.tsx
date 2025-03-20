@@ -1,5 +1,6 @@
 "use client";
 
+import { Spacer } from "@nextui-org/spacer";
 import { TodoItem } from "../lib/todo-item.interface";
 
 import TodoItemElem from "./todo-item/todo-item";
@@ -24,17 +25,22 @@ const TodoList = ({
   };
 
   return (
-    <div>
+    <>
       <h2>Todo List</h2>
-      {todoItems.map((item) => (
-        <TodoItemElem
-          key={item.id}
-          handleDelete={handleDelete}
-          handleEdit={handleEdit}
-          item={item}
-        />
-      ))}
-    </div>
+      {todoItems.map((item) => {
+        return (
+          <>
+            <TodoItemElem
+              key={item.id}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+              item={item}
+            />
+            <Spacer y={4} />
+          </>
+        );
+      })}
+    </>
   );
 };
 
