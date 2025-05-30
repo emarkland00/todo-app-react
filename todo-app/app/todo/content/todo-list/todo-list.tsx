@@ -24,9 +24,12 @@ const TodoList = ({
     onDeleteItem(item);
   };
 
+  const spacerSize = 4;
+
   return (
     <>
       <h2>Todo List</h2>
+      {console.log("TodoList rendered", todoItems)}
       {todoItems.map((item) => {
         return (
           <>
@@ -36,7 +39,7 @@ const TodoList = ({
               handleEdit={handleEdit}
               item={item}
             />
-            <Spacer y={4} />
+            <Spacer y={spacerSize} />
           </>
         );
       })}
